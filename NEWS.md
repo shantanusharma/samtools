@@ -25,12 +25,17 @@ New work and changes:
   (PR #2329, fixes #2323.  Reported by Keith James)
 
 * Speed improvement for `samtools stats`.
-  (PR#2326)
+  (PR #2326)
 
 * Changed --customized-index-file to --customized-index in `samtools stats` to
   match other subcommands.  As this option had never worked (see #2315) this
   should not cause any compatibility problems.
   (PR #2334, fixes #2333.  Thanks to Alexis Lucattini)
+
+* Fill in mate information on supplementary alignments in `samtools fixmate`.
+  Takes mate information from the primary and adds it to the supplementary
+  alignment.  Does not affect secondary alignments.
+  (PR #2347.  Thanks to Nils Homer)
 
 
 Bug fixes:

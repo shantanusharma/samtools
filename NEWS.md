@@ -54,6 +54,11 @@ Non user-visible changes and build improvements:
 * Ensure PACKAGE_VERSION is set in the Makefile.
   (PR #2342, fixes #2337.  Reported by James Ferguson)
 
+* Make version.sh work when .git is present but the git executable is not.
+  (PR #2345)
+
+* Adjust tail commands so they work on Solaris.
+  (PR #2346)
 
 Release 1.23.1 (18th March 2026)
 --------------------------------

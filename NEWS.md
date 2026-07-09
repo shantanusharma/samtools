@@ -1,6 +1,9 @@
 Release a.b
 -----------
 
+Release 1.24 (9th July 2026)
+----------------------------
+
 New work and changes:
 
 * NEW.  Contribution guidelines, Including sections on complexity, completeness,

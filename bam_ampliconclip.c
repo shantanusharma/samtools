@@ -48,7 +48,7 @@ typedef enum {
 } clipping_type;
 
 typedef struct {
-    int add_pg;
+    int no_pg;
     int use_strand;
     int write_clipped;
     int mark_fail;
@@ -727,10 +727,7 @@ static int bam_clip(samFile *in, samFile *out, samFile *reject, char *bedfile,
 
     ks_free(&str);
 
-    if (param->add_pg && sam_hdr_add_pg(header, "samtools", "VN", samtools_version(),
-                        param->arg_list ? "CL" : NULL,
-                        param->arg_list ? param->arg_list : NULL,
-                        NULL) != 0) {
+    if (samtools_add_pg_line(header, param->arg_list, param->no_pg) != 0) {
         fprintf(stderr, "[ampliconclip] warning: unable to add @PG line to header.\n");
     }
     if (sam_hdr_write(out, header) < 0) {
@@ -1083,7 +1080,7 @@ int amplicon_clip_main(int argc, char **argv) {
     htsThreadPool p = {NULL, 0};
     samFile *in = NULL, *out = NULL, *reject = NULL;
     clipping_type clipping = soft_clip;
-    cl_param_t param = {1, 0, 0, 0, 0, -1, -1, 0, 0, 1, 5, 0, NULL, NULL, NULL};
+    cl_param_t param = {0, 0, 0, 0, 0, -1, -1, 0, 0, 1, 5, 0, NULL, NULL, NULL};
 
     static const struct option lopts[] = {
         SAM_OPT_GLOBAL_OPTIONS('-', 0, 'O', 0, 0, '@'),
@@ -1112,7 +1109,7 @@ int amplicon_clip_main(int argc, char **argv) {
             case 'o': fnout = optarg; break;
             case 'f': param.stats_file = optarg; break;
             case 'u': wmode[2] = '0'; break;
-            case 1002: param.add_pg = 0; break;
+            case 1002: param.no_pg = 1; break;
             case 1003: clipping = soft_clip; break;
             case 1004: clipping = hard_clip; break;
             case 1005: param.use_strand = 1; break;

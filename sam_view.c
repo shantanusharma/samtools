@@ -1409,11 +1409,7 @@ int main_samview(int argc, char *argv[])
                 ret = 1;
                 goto view_end;
             }
-            if (sam_hdr_add_pg(settings.header, "samtools",
-                                         "VN", samtools_version(),
-                                         arg_list ? "CL": NULL,
-                                         arg_list ? arg_list : NULL,
-                                         NULL)) {
+            if (samtools_add_pg_line(settings.header, arg_list, 0)) {
                 print_error("view", "failed to add PG line to the header");
                 ret = 1;
                 goto view_end;

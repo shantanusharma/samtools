@@ -1430,11 +1430,7 @@ int bam_merge_core2(SamOrder sam_order, char* sort_tag, const char *out, const c
         return -1;
     }
     hts_set_opt(fpout, HTS_OPT_BLOCK_SIZE, BAM_BLOCK_SIZE);
-    if (!no_pg && sam_hdr_add_pg(hout, "samtools",
-                                 "VN", samtools_version(),
-                                 arg_list ? "CL": NULL,
-                                 arg_list ? arg_list : NULL,
-                                 NULL)) {
+    if (samtools_add_pg_line(hout, arg_list, no_pg)) {
         print_error(cmd, "failed to add PG line to the header of \"%s\"", out);
         sam_close(fpout);
         return -1;
@@ -1926,11 +1922,7 @@ static int bam_merge_simple(SamOrder sam_order, char *sort_tag, const char *out,
     }
     hts_set_opt(fpout, HTS_OPT_BLOCK_SIZE, BAM_BLOCK_SIZE);
 
-    if (!no_pg && sam_hdr_add_pg(hout, "samtools",
-                                 "VN", samtools_version(),
-                                 arg_list ? "CL": NULL,
-                                 arg_list ? arg_list : NULL,
-                                 NULL)) {
+    if (samtools_add_pg_line(hout, arg_list, no_pg)) {
         print_error(cmd, "failed to add PG line to the header of \"%s\"", out);
         sam_close(fpout);
         return -1;
@@ -2355,10 +2347,7 @@ static int write_buffer(const char *fn, const char *mode, size_t l, bam1_tag *bu
     fp = sam_open_format(fn, mode, fmt);
     if (fp == NULL) return -1;
     hts_set_opt(fp, HTS_OPT_BLOCK_SIZE, BAM_BLOCK_SIZE);
-    if (!no_pg && sam_hdr_add_pg((sam_hdr_t *)h, "samtools", "VN", samtools_version(),
-                                 arg_list ? "CL": NULL,
-                                 arg_list ? arg_list : NULL,
-                                 NULL)) {
+    if (samtools_add_pg_line((sam_hdr_t *)h, arg_list, no_pg)) {
         goto fail;
     }
     if (sam_hdr_write(fp, h) != 0) goto fail;

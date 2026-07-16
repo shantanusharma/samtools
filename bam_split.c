@@ -401,11 +401,7 @@ static khiter_t prep_sam_file(parsed_opts_t *opts, state_t *state,
         print_error_errno("split", "Duplicating header for file \"%s\" failed", new_file_name);
         goto fail;
     }
-    if (!opts->no_pg && sam_hdr_add_pg(new_hdr, "samtools",
-                                       "VN", samtools_version(),
-                                       arg_list ? "CL": NULL,
-                                       arg_list ? arg_list : NULL,
-                                       NULL)) {
+    if (samtools_add_pg_line(new_hdr, arg_list, opts->no_pg)) {
         print_error_errno("split", "Adding PG line to file \"%s\" failed", new_file_name);
         goto fail;
     }
@@ -577,11 +573,7 @@ static state_t* init(parsed_opts_t* opts, const char *arg_list)
             }
         } else {
             retval->unaccounted_header = sam_hdr_dup(retval->merged_input_header);
-            if (!opts->no_pg && sam_hdr_add_pg(retval->unaccounted_header, "samtools",
-                                               "VN", samtools_version(),
-                                               arg_list ? "CL": NULL,
-                                               arg_list ? arg_list : NULL,
-                                               NULL)) {
+            if (samtools_add_pg_line(retval->unaccounted_header, arg_list, opts->no_pg)) {
                 print_error("split", "Could not rewrite header for \"%s\"", opts->unaccounted_name);
                 cleanup_state(retval, false);
                 return NULL;
@@ -691,12 +683,7 @@ static state_t* init(parsed_opts_t* opts, const char *arg_list)
         // Set and edit header
         retval->output_header[i] = sam_hdr_dup(retval->merged_input_header);
         if (sam_hdr_remove_except(retval->output_header[i], "RG", "ID", retval->tag_vals[i]) ||
-            (!opts->no_pg &&
-             sam_hdr_add_pg(retval->output_header[i], "samtools",
-                            "VN", samtools_version(),
-                            arg_list ? "CL": NULL,
-                            arg_list ? arg_list : NULL,
-                            NULL))) {
+            samtools_add_pg_line(retval->output_header[i], arg_list, opts->no_pg)) {
             print_error("split", "Could not rewrite header for \"%s\"", output_filename);
             cleanup_state(retval, false);
             free(input_base_name);

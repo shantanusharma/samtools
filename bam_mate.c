@@ -1027,11 +1027,7 @@ static int bam_mating_core(samFile *in, samFile *out, int remove_reads,
     }
     ks_free(&str);
 
-    if (!no_pg && sam_hdr_add_pg(header, "samtools",
-                                 "VN", samtools_version(),
-                                 arg_list ? "CL": NULL,
-                                 arg_list ? arg_list : NULL,
-                                 NULL))
+    if (samtools_add_pg_line(header, arg_list, no_pg))
         goto fail;
 
     if (sam_hdr_write(out, header) < 0) goto write_fail;

@@ -282,11 +282,7 @@ static int import_fastq(int argc, char **argv, opts_t *opts) {
             print_error("view", "failed to create arg_list");
             goto err;
         }
-        if (sam_hdr_add_pg(hdr_out, "samtools",
-                           "VN", samtools_version(),
-                           arg_list ? "CL" : NULL,
-                           arg_list ? arg_list : NULL,
-                           NULL)) {
+        if (samtools_add_pg_line(hdr_out, arg_list, 0)) {
             fprintf(stderr, "Failed to add PG line to the header");
             free(arg_list);
             goto err;

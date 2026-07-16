@@ -250,11 +250,7 @@ static int bamshuf(const char *fn, int n_files, const char *pre, int clevel,
     }
     if (p.pool) hts_set_opt(fpw, HTS_OPT_THREAD_POOL, &p);
 
-    if (!no_pg && sam_hdr_add_pg(h, "samtools",
-                                 "VN", samtools_version(),
-                                 arg_list ? "CL": NULL,
-                                 arg_list ? arg_list : NULL,
-                                 NULL)) {
+    if (samtools_add_pg_line(h, arg_list, no_pg)) {
         print_error("collate", "failed to add PG line to header of \"%s\"", output_file);
         goto fail;
     }

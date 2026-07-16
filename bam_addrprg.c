@@ -438,11 +438,7 @@ static bool init(const parsed_opts_t* opts, state_t** state_out) {
 static bool readgroupise(parsed_opts_t *opts, state_t* state, char *arg_list)
 {
     // Write PG line to header
-    if (!opts->no_pg && sam_hdr_add_pg(state->output_header, "samtools",
-                                       "VN", samtools_version(),
-                                       arg_list ? "CL": NULL,
-                                       arg_list ? arg_list : NULL,
-                                       NULL))
+    if (samtools_add_pg_line(state->output_header, arg_list, opts->no_pg))
         return false;
 
     // Write header to output

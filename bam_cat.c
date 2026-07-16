@@ -420,11 +420,7 @@ int cram_cat(samFile * const firstfile, int nfn, char * const *fn,
     out_c = out->fp.cram;
     cram_set_option(out_c, CRAM_OPT_VERSION, vers);
 
-    if (!no_pg && sam_hdr_add_pg(new_h, "samtools",
-                                 "VN", samtools_version(),
-                                 arg_list ? "CL": NULL,
-                                 arg_list ? arg_list : NULL,
-                                 NULL))
+    if (samtools_add_pg_line(new_h, arg_list, no_pg))
         goto closefiles;
 
     if (sam_hdr_write(out, new_h) < 0) {
@@ -721,11 +717,7 @@ int bam_cat(samFile * const firstfile, int nfn, char * const *fn, sam_hdr_t *h, 
         goto fail;
     }
 
-    if (!no_pg && sam_hdr_add_pg(new_h, "samtools",
-                                    "VN", samtools_version(),
-                                    arg_list ? "CL": NULL,
-                                    arg_list ? arg_list : NULL,
-                                    NULL))
+    if (samtools_add_pg_line(new_h, arg_list, no_pg))
         goto fail;
 
     if (bam_hdr_write(fp, new_h) < 0) {

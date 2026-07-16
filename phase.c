@@ -584,11 +584,7 @@ static int start_output(phaseg_t *g, int c, const char *middle, const htsFormat 
     }
 
     g->out_hdr[c] = sam_hdr_dup(g->fp_hdr);
-    if (!g->no_pg && sam_hdr_add_pg(g->out_hdr[c], "samtools",
-                                    "VN", samtools_version(),
-                                    g->arg_list ? "CL": NULL,
-                                    g->arg_list ? g->arg_list : NULL,
-                                    NULL)) {
+    if (samtools_add_pg_line(g->out_hdr[c], g->arg_list, g->no_pg)) {
         print_error("phase", "failed to add PG line to header");
         return -1;
     }

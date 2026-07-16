@@ -423,11 +423,7 @@ int bam_fillmd(int argc, char *argv[])
         print_error_errno("calmd", "Failed to open output");
         goto fail;
     }
-    if (!no_pg && sam_hdr_add_pg(header, "samtools",
-                                 "VN", samtools_version(),
-                                 arg_list ? "CL": NULL,
-                                 arg_list ? arg_list : NULL,
-                                 NULL)) {
+    if (samtools_add_pg_line(header, arg_list, no_pg)) {
         print_error("calmd", "failed to add PG line to header");
         goto fail;
     }

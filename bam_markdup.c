@@ -1611,10 +1611,7 @@ static int bam_mark_duplicates(md_param_t *param) {
     }
     ks_free(&str);
 
-    if (!param->no_pg && sam_hdr_add_pg(header, "samtools", "VN", samtools_version(),
-                        param->arg_list ? "CL" : NULL,
-                        param->arg_list ? param->arg_list : NULL,
-                        NULL) != 0) {
+    if (samtools_add_pg_line(header, param->arg_list, param->no_pg) != 0) {
         print_error("markdup", "warning, unable to add @PG line to header.\n");
     }
 

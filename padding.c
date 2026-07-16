@@ -543,11 +543,7 @@ int main_pad2unpad(int argc, char *argv[])
             goto depad_end;
             }
 
-        if (sam_hdr_add_pg(h_fix, "samtools",
-                           "VN", samtools_version(),
-                           arg_list ? "CL": NULL,
-                           arg_list ? arg_list : NULL,
-                           NULL)) {
+        if (samtools_add_pg_line(h_fix, arg_list, 0)) {
             fprintf(stderr, "[depad] failed to add PG line to header\n");
             ret = 1;
             goto depad_end;

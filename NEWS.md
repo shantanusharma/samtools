@@ -1,6 +1,20 @@
 Release a.b
 -----------
 
+New work and changes:
+
+* CHANGE.  When the HTSlib version in use cannot be deduced from the SAMtools
+  version, the `@PG` `VN` field now records it too, for example
+  `VN:1.24.1 (with HTSlib 1.25)`.  As SAMtools and HTSlib are released together
+  with matching major and minor version numbers, `VN` is unchanged in the usual
+  case.  All subcommands now add their `@PG` line via a single shared helper.
+
+* FIX.  `samtools reset` now records the version (`VN`) in its `@PG` line, as
+  every other subcommand does; previously it wrote only the command line.
+
+* NEW.  `samtools rmdup` now adds a `@PG` line and accepts `--no-PG` to
+  suppress it, matching the other subcommands.
+
 Release 1.24 (9th July 2026)
 ----------------------------
 

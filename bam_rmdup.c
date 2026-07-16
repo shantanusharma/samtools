@@ -260,6 +260,8 @@ static int rmdup_usage(void) {
     fprintf(stderr, "Usage:  samtools rmdup [-sS] <input.srt.bam> <output.bam>\n\n");
     fprintf(stderr, "Option: -s    rmdup for SE reads\n");
     fprintf(stderr, "        -S    treat PE reads as SE in rmdup (force -s)\n");
+    fprintf(stderr, "        --no-PG\n"
+                    "              do not add a PG line\n");
 
     sam_global_opt_help(stderr, "-....--.");
     return 1;
@@ -267,14 +269,16 @@ static int rmdup_usage(void) {
 
 int bam_rmdup(int argc, char *argv[])
 {
-    int c, ret, is_se = 0, force_se = 0;
+    int c, ret, is_se = 0, force_se = 0, no_pg = 0;
     samFile *in, *out;
     sam_hdr_t *header;
     char wmode[3] = {'w', 'b', 0};
+    char *arg_list = NULL;
     sam_global_args ga = SAM_GLOBAL_ARGS_INIT;
 
     static const struct option lopts[] = {
         SAM_OPT_GLOBAL_OPTIONS('-', 0, 0, 0, 0, '-'),
+        {"no-PG", no_argument, NULL, 1},
         { NULL, 0, NULL, 0 }
     };
 
@@ -282,6 +286,7 @@ int bam_rmdup(int argc, char *argv[])
         switch (c) {
         case 's': is_se = 1; break;
         case 'S': force_se = is_se = 1; break;
+        case 1: no_pg = 1; break;
         default:  if (parse_sam_global_opt(c, optarg, lopts, &ga) == 0) break;
             /* else fall-through */
         case '?': return rmdup_usage();
@@ -307,14 +312,28 @@ int bam_rmdup(int argc, char *argv[])
         print_error_errno("rmdup", "failed to open \"%s\" for output", argv[optind+1]);
         return 1;
     }
+    if (!no_pg) {
+        if (!(arg_list = stringify_argv(argc + 1, argv - 1))) {
+            print_error("rmdup", "failed to create arg_list");
+            return 1;
+        }
+    }
+    if (samtools_add_pg_line(header, arg_list, no_pg)) {
+        print_error("rmdup", "failed to add PG line to header");
+        free(arg_list);
+        return 1;
+    }
+
     if (sam_hdr_write(out, header) < 0) {
         print_error_errno("rmdup", "failed to write header");
+        free(arg_list);
         return 1;
     }
 
     if (is_se) ret = bam_rmdupse_core(in, header, out, force_se);
     else ret = bam_rmdup_core(in, header, out);
 
+    free(arg_list);
     sam_hdr_destroy(header);
     sam_close(in);
     if (sam_close(out) < 0) {

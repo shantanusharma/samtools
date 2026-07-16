@@ -263,9 +263,9 @@ int getPGlines(sam_hdr_t *in_samhdr, sam_hdr_t *out_samhdr, conf_data *config, c
         }
     }
 
-    if (!ret && !config->noPGentry) {
-        //add PG entry with reset command
-        if (-1 == (ret = sam_hdr_add_pg(out_samhdr, "samtools", "CL", argdump, NULL))) {
+    if (!ret) {
+        //add PG entry with reset command (records VN, htslib version and CL)
+        if (-1 == (ret = samtools_add_pg_line(out_samhdr, argdump, config->noPGentry))) {
             fprintf(stderr, "Failed to set PG entry!\n");
         }
     }

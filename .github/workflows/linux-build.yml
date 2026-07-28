@@ -70,8 +70,8 @@ jobs:
       working-directory: .
       run: |
         mkdir -p ${{ matrix.htssrc }}
-        htslib_pr=`git show -s --format=%s HEAD^2 | sed -n 's/.*htslib#\([0-9]*\).*/\1/p'`
-        ./samtools/.ci_helpers/clone ${GITHUB_REPOSITORY_OWNER} htslib ${{ matrix.htssrc }} ${GITHUB_HEAD_REF:-$GITHUB_REF_NAME} $htslib_pr
+        cd samtools
+        .ci_helpers/clone ${GITHUB_REPOSITORY_OWNER} htslib ../${{ matrix.htssrc }} ${GITHUB_HEAD_REF:-$GITHUB_REF_NAME} ${{ github.sha }}
 
     - name: Set build options
       run: |

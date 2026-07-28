@@ -58,11 +58,7 @@ jobs:
       - name: Clone htslib
         run: |
           git config --global --add safe.directory `pwd`
-          # Unless we specified ref: ${{ github.event.pull_request.head.sha }}
-          # in the actions/checkout, we have a merge commit with HEAD^2
-          # being the head of our PR commit.
-          htslib_pr=`git show -s --format=%s HEAD^2 | sed -n 's/.*htslib#\([0-9]*\).*/\1/p'`
-          .ci_helpers/clone ${GITHUB_REPOSITORY_OWNER} htslib htslib ${GITHUB_HEAD_REF:-$GITHUB_REF_NAME} $htslib_pr
+          .ci_helpers/clone ${GITHUB_REPOSITORY_OWNER} htslib htslib ${GITHUB_HEAD_REF:-$GITHUB_REF_NAME} ${{ github.sha }}
 
       - name: Configure samtools
         run: |

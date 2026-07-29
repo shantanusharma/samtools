@@ -47,7 +47,7 @@ jobs:
         export MSYSTEM=MINGW64
         autoheader
         autoconf -Wno-syntax
-        ./configure --enable-werror
+        ./configure --disable-ref-cache --enable-werror
         make -j4
     - name: Check samtools
       shell: msys2 {0}

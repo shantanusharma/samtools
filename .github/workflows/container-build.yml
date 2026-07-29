@@ -64,7 +64,7 @@ jobs:
         run: |
           (cd htslib; autoreconf -i)
           autoreconf -i
-          ./configure --enable-werror CFLAGS="-g -O3"
+          ./configure --disable-ref-cache --enable-werror CFLAGS="-g -O3"
 
       - name: Build htslib and samtools
         run: |

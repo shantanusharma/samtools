@@ -101,7 +101,7 @@ jobs:
         echo "htsdir=${htsdir}" >> "$GITHUB_ENV"
 
         autoreconf -i
-        { ./configure --prefix="$htsdir" ${configure_opts} ${cc:+CC="$cc"} ${cflags:+CFLAGS="$cflags"} ${ldflags:+LDFLAGS="$ldflags"} ||
+        { ./configure --disable-ref-cache --prefix="$htsdir" ${configure_opts} ${cc:+CC="$cc"} ${cflags:+CFLAGS="$cflags"} ${ldflags:+LDFLAGS="$ldflags"} ||
           { cat config.log ; false ; } ; } &&
         make -j 5 &&
         make install

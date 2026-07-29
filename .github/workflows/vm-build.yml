@@ -48,13 +48,9 @@ jobs:
         run: |
           htsdir="`realpath .`/installed-htslib"
 
-          # The C library does casting in CMSG_SPACE, breaking ref_cache.
-          # It also doesn't like -fstack-protector, but we only check compile
-          # rather than link time, so disable that too.  We add to CPPFLAGS
-          # as it occurs after REF_CACHE_EXTRA_C_FLAGS.
           cd hidden-htslib
           autoreconf -i
-          ./configure --prefix="$htsdir" --with-libdeflate --enable-werror --enable-plugins CFLAGS="-g -O3 -fsanitize=address,undefined -DHTS_ALLOW_UNALIGNED=0 -Wno-format-truncation -Wno-format-overflow" CPPFLAGS="-I/usr/local/include" LDFLAGS="-fsanitize=address,undefined -L/usr/local/lib -Wl,-R/usr/local/lib"
+          ./configure --disable-ref-cache --prefix="$htsdir" --with-libdeflate --enable-werror --enable-plugins CFLAGS="-g -O3 -fsanitize=address,undefined -DHTS_ALLOW_UNALIGNED=0 -Wno-format-truncation -Wno-format-overflow" CPPFLAGS="-I/usr/local/include" LDFLAGS="-fsanitize=address,undefined -L/usr/local/lib -Wl,-R/usr/local/lib"
           gmake -k -j 5 && gmake install
 
       - name: Configure samtools
@@ -114,7 +110,7 @@ jobs:
           export AUTOMAKE_VERSION=1.18
           cd hidden-htslib
           autoreconf -i
-          ./configure --prefix="$htsdir" --with-libdeflate --enable-werror --enable-plugins CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib -Wl,-R/usr/local/lib"
+          ./configure --disable-ref-cache --prefix="$htsdir" --with-libdeflate --enable-werror --enable-plugins CPPFLAGS="-I/usr/local/include" LDFLAGS="-L/usr/local/lib -Wl,-R/usr/local/lib"
           gmake -k -j 5 && gmake install
 
       - name: Configure samtools
@@ -175,13 +171,9 @@ jobs:
         run: |
           htsdir="`realpath .`/installed-htslib"
 
-          # The C library does casting in CMSG_SPACE, breaking ref_cache.
-          # It also doesn't like -fstack-protector, but we only check compile
-          # rather than link time, so disable that too.  We add to CPPFLAGS
-          # as it occurs after REF_CACHE_EXTRA_C_FLAGS.
           cd hidden-htslib
           autoreconf -i
-          ./configure --prefix="$htsdir" --enable-werror CPPFLAGS="-Wno-sign-conversion -fno-stack-protector"
+          ./configure --disable-ref-cache --prefix="$htsdir" --enable-werror
           gmake -k -j 5 && gmake install
 
       - name: Configure samtools
@@ -191,8 +183,6 @@ jobs:
           autoreconf -i
           with_htslib="--with-htslib=$htsdir"
           ldflags="-Wl,-rpath=${htsdir}/lib"
-          # -Wno-char-subscripts turns off errors such as phase.c:460, which are
-          # false alarms anyway.
           ./configure --with-htslib=$htsdir --enable-werror LDFLAGS="-Wl,-rpath=${htsdir}/lib" CFLAGS="-g -O3"
 
       - name: Build

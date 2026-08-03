@@ -2121,6 +2121,14 @@ sub test_view
                   compare => $sam_with_ur);
     $test++;
 
+    my $bam_with_no_ur_out = sprintf("%s.test%03d.bam", $out, $test);
+    run_view_test($opts,
+                  msg => "$test: SAM -> BAM -> SAM",
+                  args => ['-b', '--remove-ur', $sam_with_ur, '--no-PG'],
+                  out => $bam_with_no_ur_out,
+                  compare_sam => $sam_no_ur);
+    $test++;
+
 
     # Header only options
     my $sam_header = "$$opts{tmp}/view.001.header.sam";

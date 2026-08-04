@@ -1,6 +1,10 @@
 name: Linux CI
 on: [push, pull_request]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-linux:
     runs-on: ${{ matrix.os }}
@@ -53,6 +57,7 @@ jobs:
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       with:
         persist-credentials: false
+        fetch-depth: 3
         path: samtools
 
     - name: Run apt
@@ -65,8 +70,8 @@ jobs:
       working-directory: .
       run: |
         mkdir -p ${{ matrix.htssrc }}
-        htslib_pr=`git log -2 --format='%s' | sed -n 's/.*htslib#\([0-9]*\).*/\1/p'`
-        ./samtools/.ci_helpers/clone ${GITHUB_REPOSITORY_OWNER} htslib ${{ matrix.htssrc }} ${GITHUB_HEAD_REF:-$GITHUB_REF_NAME} $htslib_pr
+        cd samtools
+        .ci_helpers/clone ${GITHUB_REPOSITORY_OWNER} htslib ../${{ matrix.htssrc }} ${GITHUB_HEAD_REF:-$GITHUB_REF_NAME} ${{ github.sha }}
 
     - name: Set build options
       run: |
@@ -96,7 +101,7 @@ jobs:
         echo "htsdir=${htsdir}" >> "$GITHUB_ENV"
 
         autoreconf -i
-        { ./configure --prefix="$htsdir" ${configure_opts} ${cc:+CC="$cc"} ${cflags:+CFLAGS="$cflags"} ${ldflags:+LDFLAGS="$ldflags"} ||
+        { ./configure --disable-ref-cache --prefix="$htsdir" ${configure_opts} ${cc:+CC="$cc"} ${cflags:+CFLAGS="$cflags"} ${ldflags:+LDFLAGS="$ldflags"} ||
           { cat config.log ; false ; } ; } &&
         make -j 5 &&
         make install
